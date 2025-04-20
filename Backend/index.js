@@ -9,7 +9,7 @@ const port = 3000;
 
 app.use(cors());
 
-// Setting up the file storage
+// settting up the file storage
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, "uploads");
@@ -20,35 +20,28 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-// Root route for testing
-app.get("/", (req, res) => {
-    res.send("Welcome to the Word to PDF Converter API!");
-});
-
-// File conversion endpoint
 app.post("/convertFile", upload.single("file"), (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({
-                message: "No file uploaded",
+                message: "No file  uploaded",
             });
         }
-        // Defining output file path
-        let outputPath = path.join(
+        // Defining outout file path
+        let outoutPath = path.join(
             __dirname,
             "files",
-            `${path.parse(req.file.originalname).name}.pdf` // Use path.parse to avoid .docx in filename
+            `${req.file.originalname}.pdf`
         );
-        docxToPDF(req.file.path, outputPath, (err, result) => {
+        docxToPDF(req.file.path, outoutPath, (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({
                     message: "Error converting docx to pdf",
                 });
             }
-            res.download(outputPath, () => {
-                console.log("File downloaded");
+            res.download(outoutPath, () => {
+                console.log("file downloaded");
             });
         });
     } catch (error) {
